@@ -67,7 +67,11 @@ function($scope, $http, $resource, $stateParams, $state) {
 		
 		if ($state.current.name == 'app.owneredit') {
 			var restUrl = "/petclinic/owner/" + $stateParams.id;
-			$http.put(restUrl, data);
+			var promise = $http.put(restUrl, data);
+			if (promise.then(function(value) {
+				$state.go('app.ownerlist');		
+			}	
+			))
 			$state.go('app.ownerlist');			
 		}
 		else { // in case of owner creation

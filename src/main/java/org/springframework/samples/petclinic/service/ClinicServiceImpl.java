@@ -16,7 +16,6 @@
 package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
@@ -104,6 +103,13 @@ public class ClinicServiceImpl implements ClinicService {
     public Collection<Vet> findVets() throws DataAccessException {
         return vetRepository.findAll();
     }
+
+  @Override
+  @Transactional
+  public void deleteOwner(int ownerId)
+  {
+    ownerRepository.delete(ownerId);
+  }
 
 
 }

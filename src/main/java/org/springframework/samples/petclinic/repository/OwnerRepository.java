@@ -31,7 +31,6 @@
 package org.springframework.samples.petclinic.repository;
 
 import java.util.Collection;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Owner;
@@ -76,5 +75,6 @@ public interface OwnerRepository {
      */
     void save(Owner owner) throws DataAccessException;
 
+  void delete(int ownerId);
 
 }
