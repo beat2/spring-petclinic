@@ -106,9 +106,10 @@ public class ClinicServiceImpl implements ClinicService {
 
   @Override
   @Transactional
-  public void deleteOwner(int ownerId)
+  public boolean deleteOwner(int ownerId)
   {
     ownerRepository.delete(ownerId);
+    return true;
   }
 
 

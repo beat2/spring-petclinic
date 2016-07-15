@@ -164,10 +164,9 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
 
 
   @Override
-  public void delete(int ownerId)
+  public boolean delete(int ownerId)
   {
     throw new NotImplementedException();
-
   }
 
 }

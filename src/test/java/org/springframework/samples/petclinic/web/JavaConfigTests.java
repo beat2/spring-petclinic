@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.web;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,9 +11,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.repository.OwnerRepository;
+import org.springframework.samples.petclinic.repository.PetRepository;
+import org.springframework.samples.petclinic.repository.VetRepository;
+import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.samples.petclinic.web.JavaConfigTests.WebConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -75,7 +81,16 @@ public class JavaConfigTests
   public void deleteOwnerNotFound() throws Exception
   {
     this.mockMvc.perform(MockMvcRequestBuilders.delete("/owner/delete/6").accept(MediaType.APPLICATION_JSON))
-        .andDo(print()).andExpect(status().isNotFound());
+        .andDo(print()).andExpect(status().isNotFound()).andExpect(content().string("Oops"));
+  }
+
+  @Test
+  public void findOwner() throws Exception
+  {
+    String jsonRep = "{\"id\":null,\"firstName\":\"First-Name\",\"lastName\":\"Last-Name\",\"address\":\"Address\",\"city\":\"City\",\"telephone\":\"te\",\"pets\":[],\"new\":true}";
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/owner/5").accept(MediaType.APPLICATION_JSON)).andDo(print())
+        .andExpect(status().isOk()).andExpect(content().string(jsonRep));
+
   }
 
   /**
@@ -97,36 +112,46 @@ public class JavaConfigTests
 
   @Configuration
   @EnableWebMvc
+  @ComponentScan(basePackages =
+  {
+      "org.springframework.samples.petclinic.web", "org.springframework.samples.petclinic.service"
+  })
   static class WebConfig extends WebMvcConfigurerAdapter
   {
+    // mock repositories (db layer)
 
     @Bean
-    public OwnerResource personController()
+    OwnerRepository ownerRepo()
     {
-      ClinicService clinicService = Mockito.mock(ClinicService.class);
-      Mockito.doThrow(new IllegalStateException()).when(clinicService).deleteOwner(6);
-      return new OwnerResource(clinicService);
+      OwnerRepository owner = Mockito.mock(OwnerRepository.class);
+      Mockito.when(owner.delete(6)).thenThrow(new IllegalStateException());
+      Owner mock = new Owner();
+      mock.setAddress("Address");
+      mock.setCity("City");
+      mock.setFirstName("First-Name");
+      mock.setLastName("Last-Name");
+      mock.setTelephone("te");
+      Mockito.when(owner.findById(5)).thenReturn(mock);
+      return owner;
     }
 
-    // @Override
-    // public void addResourceHandlers(ResourceHandlerRegistry registry)
-    // {
-    // registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-    // }
-    //
-    // @Override
-    // public void addViewControllers(ViewControllerRegistry registry)
-    // {
-    // registry.addViewController("/").setViewName("home");
-    // }
-    //
-    // @Override
-    // public void
-    // configureDefaultServletHandling(DefaultServletHandlerConfigurer
-    // configurer)
-    // {
-    // configurer.enable();
-    // }
+    @Bean
+    PetRepository petRepo()
+    {
+      return Mockito.mock(PetRepository.class);
+    }
+
+    @Bean
+    VetRepository vetRepo()
+    {
+      return Mockito.mock(VetRepository.class);
+    }
+
+    @Bean
+    VisitRepository visitRepo()
+    {
+      return Mockito.mock(VisitRepository.class);
+    }
 
   }
 

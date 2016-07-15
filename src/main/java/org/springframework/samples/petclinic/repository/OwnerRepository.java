@@ -75,6 +75,6 @@ public interface OwnerRepository {
      */
     void save(Owner owner) throws DataAccessException;
 
-  void delete(int ownerId);
+  boolean delete(int ownerId);
 
 }

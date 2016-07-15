@@ -87,13 +87,14 @@ public class JpaOwnerRepositoryImpl implements OwnerRepository
 
   }
 
-  public void delete(int id)
+  public boolean delete(int id)
   {
     Owner owner = findById(id);
     if (owner != null)
     {
       em.remove(owner);
     }
+    return true;
   }
 
 }

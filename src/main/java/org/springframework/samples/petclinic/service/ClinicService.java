@@ -47,6 +47,6 @@ public interface ClinicService {
 
     Collection<Owner> findOwnerByLastName(String lastName) throws DataAccessException;
 
-  void deleteOwner(int ownerId);
+  boolean deleteOwner(int ownerId);
 
 }
